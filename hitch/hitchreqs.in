@@ -1,0 +1,15 @@
+hitchpython
+hitchstory>=0.8.0
+strictyaml>=0.11.0
+hitchrunpy>=0.6.0
+hitchbuildpy
+hitchrun
+hitchdoc
+pypandoc
+templex
+flake8
+jupyter_console
+twine
+simex
+q
+icommandlib

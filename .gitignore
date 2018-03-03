@@ -1,0 +1,10 @@
+build/
+dist/
+.cache
+dirtemplate.egg-info/
+__pycache__
+*.pyc
+*.kate-swp
+hitch/gen
+hitch/personalsettings.yml
+temp/
