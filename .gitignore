@@ -5,6 +5,7 @@ dirtemplate.egg-info/
 __pycache__
 *.pyc
 *.kate-swp
+*.swp
 hitch/gen
 hitch/personalsettings.yml
 temp/

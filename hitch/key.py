@@ -47,18 +47,6 @@ class Engine(BaseEngine):
                 filepath.dirname().makedirs()
             filepath.write_text(content)
 
-        """
-        if self.given.documentation_jinja2 is None:
-            self.path.state.joinpath("documentation.jinja2").write_text(self.given.documentation_jinja2)
-        for filename in [
-            "base.story", "example.story", "example1.story",
-            "example2.story", "example3.story", "engine.py",
-            "documentation.jinja2",
-        ]:
-            if filename in self.given:
-                self.path.state.joinpath(filename).write_text(self.given[filename])
-        """
-
         py_version = "3.5.0" if self.given.python_version is None else self.given.python_version
         self.python_package = hitchpython.PythonPackage(py_version)
         self.python_package.build()
