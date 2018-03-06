@@ -14,7 +14,7 @@ With jinja2:
       from dirtemplate import DirTemplate
   steps:
   - Run: |
-      DirTemplate(name="example", src="src", built="built").with_vars(variable="var").ensure_built()
+      DirTemplate(name="example", src="src", dest="built").with_vars(variable="var").ensure_built()
   - Build output is:
       files:
         built/example/index.md: Index file

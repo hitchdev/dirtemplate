@@ -124,10 +124,7 @@ class Engine(BaseEngine):
             filepath = self.path.state.joinpath(filename)
 
             assert filepath.exists(), "{0} does not exist".format(filename)
-            assert filepath.text() == content, \
-                "{0} contains:\n\n{1}\n\nshould contain:\n{2}".format(
-                    filename, filepath.text(), content,
-                )
+            Templex(content).assert_match(filepath.text())
 
     def on_success(self):
         self.new_story.save()

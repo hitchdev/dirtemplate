@@ -10,7 +10,7 @@ Simple:
       from dirtemplate import DirTemplate
   steps:
   - Run: |
-      DirTemplate(name="example", src="src", built="built").ensure_built()
+      DirTemplate(name="example", src="src", dest="built").ensure_built()
   - Build output is:
       files:
         built/example/index.md: Index file
