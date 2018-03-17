@@ -1,5 +1,5 @@
-With jinja2:
-  docs: with-jinja2
+Templated file:
+  docs: templated-file
   about: |
     Copy files from one directory to another but copy jinja2.
   given:
@@ -8,8 +8,9 @@ With jinja2:
       src/templated.md: Templated {{ variable }} file.
       src/insubdir/subdirectoryfile: subdirectory file
       src/dirtemplate.yml: |
-        templated.md:
-          jinja2: yes
+        templated:
+        - templated.md:
+            content: yes
     setup: |
       from dirtemplate import DirTemplate
   steps:

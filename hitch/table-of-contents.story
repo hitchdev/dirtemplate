@@ -1,14 +1,15 @@
-Dir object:
+Table of contents:
   docs: dir-object
   about: |
-    Copy files from one directory to another but copy jinja2.
+    In this example a templated index file is created using
+    jinja2 that points to other files in the dirtemplate.
   given:
     files:
       src/index.md: |
         Index file
         ----------
         {% for dirfile in directory.location("subdir") %}
-        * [{{ title(dirfile) }}](subdir/{{ dirfile.basename() }})
+        * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
         {%- endfor %}
       src/subdir/page1.md: |
         Page 1 title
@@ -21,8 +22,9 @@ Dir object:
         
         Page 2 contents
       src/dirtemplate.yml: |
-        index.md:
-          jinja2: yes
+        templated:
+        - index.md:
+            content: yes
     setup: |
       from dirtemplate import DirTemplate
   steps:
@@ -37,8 +39,8 @@ Dir object:
           Index file
           ----------
           
-          * [Page 1 title](subdir/page1.md)
-          * [Page 2 title](subdir/page2.md)
+          * [Page 1 title](subdir/page1)
+          * [Page 2 title](subdir/page2)
         built/example/subdir/page1.md: |
           Page 1 title
           ============
