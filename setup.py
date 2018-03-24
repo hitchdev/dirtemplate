@@ -40,7 +40,10 @@ setup(name="dirtemplate",
       author_email='colm.oconnor.github@gmail.com',
       url='http://hitchdev.com/dirtemplate',
       license='MIT',
-      install_requires=["jinja2", "strictyaml", "hitchbuild", "pathquery"],
+      install_requires=[
+          "jinja2", "strictyaml", "hitchbuild",
+          "pathquery", "python-slugify"
+      ],
       packages=find_packages(exclude=["hitch", "docs", ]),
       package_data={},
       zip_safe=False,
