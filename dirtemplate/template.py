@@ -85,9 +85,8 @@ class DirTemplate(HitchBuild):
 
                                     jinja2_template = Template(src_path.text())
                                     jinja2_template.globals.update(self._functions)
-                                    dest_path.write_text(
-                                        jinja2_template.render(render_vars)
-                                    )
+
+                                    dest_path.write_text(jinja2_template.render(render_vars))
                             else:
                                 raise Exception((
                                     "{0} templated filename exists but not "
@@ -99,12 +98,12 @@ class DirTemplate(HitchBuild):
                             if not dest_path.dirname().exists():
                                 dest_path.dirname().makedirs()
 
-                        if template_configuration[relpath]['content']:
-                            jinja2_template = Template(src_path.text())
-                            jinja2_template.globals.update(self._functions)
-                            dest_path.write_text(
-                                jinja2_template.render(**self._render_vars)
-                            )
+                            if template_configuration[relpath]['content']:
+                                jinja2_template = Template(src_path.text())
+                                jinja2_template.globals.update(self._functions)
+                                dest_path.write_text(
+                                    jinja2_template.render(**self._render_vars)
+                                )
 
                         remaining_src_paths.remove(src_path)
 
