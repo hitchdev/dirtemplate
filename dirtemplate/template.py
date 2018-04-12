@@ -35,8 +35,8 @@ class DirTemplate(HitchBuild):
         self._variables = {}
         self._functions = {}
         self._files = {}
-        assert self._build_path.exists(), "{0} does not exist."
-        assert self._src_path.exists(), "{0} does not exist."
+        assert self._build_path.exists(), "{0} does not exist.".format(self._build_path)
+        assert self._src_path.exists(), "{0} does not exist.".format(self._src_path)
 
     def with_vars(self, **variables):
         new_dirt = copy(self)
@@ -58,6 +58,13 @@ class DirTemplate(HitchBuild):
         render_vars = copy(self._variables)
         render_vars['directory'] = Dir(self._src_path)
         return render_vars
+
+    def fingerprint(self):
+        return {
+            "vars": self._variables,
+            "files": self._files,
+            "functions": [str(func) for func in self._functions],
+        }
 
     def build(self):
         if self._src_path.joinpath("dirtemplate.yml").exists():
@@ -113,7 +120,7 @@ class DirTemplate(HitchBuild):
                                                 config.get("base templates")
                                             )
                                         )
-                                    )                                   
+                                    )
                             else:
                                 raise Exception((
                                     "{0} templated filename exists but not "

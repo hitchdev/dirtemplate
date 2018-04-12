@@ -41,7 +41,7 @@ setup(name="dirtemplate",
       url='http://hitchdev.com/dirtemplate',
       license='MIT',
       install_requires=[
-          "jinja2", "strictyaml", "hitchbuild",
+          "jinja2", "strictyaml", "hitchbuild>=0.3.3",
           "pathquery", "python-slugify"
       ],
       packages=find_packages(exclude=["hitch", "docs", ]),
