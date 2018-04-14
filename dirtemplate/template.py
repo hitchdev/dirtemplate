@@ -6,16 +6,23 @@ import jinja2
 from copy import copy
 from dirtemplate.directory import Dir
 from slugify import slugify
+from dirtemplate import exceptions
 
 
 def render(template_text, functions, render_vars, base_templates):
-    templates = base_templates if base_templates is not None else {}
-    templates['template_to_render'] = template_text
-    environment = jinja2.Environment(
-        loader=jinja2.DictLoader(templates)
-    )
-    environment.globals.update(functions)
-    return environment.get_template('template_to_render').render(**render_vars)
+    try:
+        templates = base_templates if base_templates is not None else {}
+        templates['template_to_render'] = template_text
+        environment = jinja2.Environment(
+            loader=jinja2.DictLoader(templates)
+        )
+        environment.globals.update(functions)
+        rendered = environment.get_template(
+            'template_to_render'
+        ).render(**render_vars)
+    except jinja2.exceptions.TemplateSyntaxError as error:
+        raise exceptions.TemplateError("template syntax error")
+    return rendered
 
 
 def base_templates(src_path, template_folder):

@@ -108,7 +108,7 @@ class Engine(BaseEngine):
             try:
                 result = self.example_py_code.expect_exceptions().run()
                 result.exception_was_raised(exception_type)
-                exception_message = self._story_friendly_output(result.exception.message)
+                exception_message = result.exception.message
                 Templex(exception_message).assert_match(message)
             except AssertionError:
                 if self.settings.get("overwrite artefacts"):
