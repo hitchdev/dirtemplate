@@ -21,12 +21,18 @@ def render(template_file, functions, render_vars, base_templates):
             'template_to_render'
         ).render(**render_vars)
     except jinja2.exceptions.TemplateSyntaxError as error:
-        raise exceptions.TemplateError(
+        raise exceptions.TemplateLineError(
             template_file.abspath(),
             "Syntax error",
             error.lineno,
             error.message,
             error.source,
+        )
+    except jinja2.exceptions.UndefinedError as error:
+        raise exceptions.TemplateError(
+            template_file.abspath(),
+            "Undefined var",
+            error.message,
         )
     return rendered
 
