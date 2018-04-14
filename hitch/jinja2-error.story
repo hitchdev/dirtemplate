@@ -20,4 +20,6 @@ Template Error:
         DirTemplate(name="example", src="src", dest="built").ensure_built()
       raises:
         type: dirtemplate.exceptions.TemplateError
-        message: template syntax error
+        message: "Syntax error in /path/to/src/index.md on line 3:\n\nEncountered\
+          \ unknown tag 'jinja2'.\n\nIndex file\n----------\n{% jinja2 tag error\n\
+          \n"

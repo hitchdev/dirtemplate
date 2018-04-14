@@ -9,10 +9,10 @@ from slugify import slugify
 from dirtemplate import exceptions
 
 
-def render(template_text, functions, render_vars, base_templates):
+def render(template_file, functions, render_vars, base_templates):
     try:
         templates = base_templates if base_templates is not None else {}
-        templates['template_to_render'] = template_text
+        templates['template_to_render'] = template_file.text()
         environment = jinja2.Environment(
             loader=jinja2.DictLoader(templates)
         )
@@ -21,7 +21,13 @@ def render(template_text, functions, render_vars, base_templates):
             'template_to_render'
         ).render(**render_vars)
     except jinja2.exceptions.TemplateSyntaxError as error:
-        raise exceptions.TemplateError("template syntax error")
+        raise exceptions.TemplateError(
+            template_file.abspath(),
+            "Syntax error",
+            error.lineno,
+            error.message,
+            error.source,
+        )
     return rendered
 
 
@@ -119,7 +125,7 @@ class DirTemplate(HitchBuild):
 
                                     dest_path.write_text(
                                         render(
-                                            src_path.text(),
+                                            src_path,
                                             self._functions,
                                             render_vars,
                                             base_templates(
@@ -142,7 +148,7 @@ class DirTemplate(HitchBuild):
                             if template_configuration[relpath]['content']:
                                 dest_path.write_text(
                                     render(
-                                        src_path.text(),
+                                        src_path,
                                         self._functions,
                                         self._render_vars,
                                         base_templates(

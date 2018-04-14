@@ -67,6 +67,9 @@ class Engine(BaseEngine):
                 self.pip("uninstall", "dirtemplate", "-y").ignore_errors().run()
                 self.pip("install", ".").in_dir(self.path.project).run()
 
+    def _process_exception(self, string):
+        return string.replace(self.path.state, "/path/to")
+
     @no_stacktrace_for(AssertionError)
     @no_stacktrace_for(HitchRunPyException)
     @validate(
@@ -108,8 +111,8 @@ class Engine(BaseEngine):
             try:
                 result = self.example_py_code.expect_exceptions().run()
                 result.exception_was_raised(exception_type)
-                exception_message = result.exception.message
-                Templex(exception_message).assert_match(message)
+                exception_message = self._process_exception(result.exception.message)
+                Templex(message).assert_match(exception_message)
             except AssertionError:
                 if self.settings.get("overwrite artefacts"):
                     new_raises = raises.copy()
