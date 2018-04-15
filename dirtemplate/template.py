@@ -79,11 +79,7 @@ class DirTemplate(HitchBuild):
         return render_vars
 
     def fingerprint(self):
-        return {
-            "vars": self._variables.keys(),
-            "files": self._files,
-            "functions": [str(func) for func in self._functions],
-        }
+        return {}
 
     def build(self):
         if self._src_path.joinpath("dirtemplate.yml").exists():
