@@ -80,7 +80,7 @@ class DirTemplate(HitchBuild):
 
     def fingerprint(self):
         return {
-            "vars": self._variables,
+            "vars": self._variables.keys(),
             "files": self._files,
             "functions": [str(func) for func in self._functions],
         }
