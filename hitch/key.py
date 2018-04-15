@@ -4,7 +4,7 @@ from hitchstory import StoryCollection, BaseEngine, exceptions, validate
 from hitchstory import GivenDefinition, GivenProperty, InfoDefinition, InfoProperty
 from hitchrun import expected
 from strictyaml import Str, MapPattern, Map, Optional
-from pathquery import pathq
+from pathquery import pathquery
 from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
@@ -61,7 +61,7 @@ class Engine(BaseEngine):
 
         # Uninstall and reinstall
         with hitchtest.monitor(
-            pathq(self.path.project.joinpath("dirtemplate")).ext("py")
+            pathquery(self.path.project.joinpath("dirtemplate")).ext("py")
         ) as changed:
             if changed:
                 self.pip("uninstall", "dirtemplate", "-y").ignore_errors().run()
@@ -129,6 +129,14 @@ class Engine(BaseEngine):
             assert filepath.exists(), "{0} does not exist".format(filename)
             Templex(content).assert_match(filepath.text())
 
+        actual_files = list(pathquery(self.path.state.joinpath("built", "example")).is_not_dir())
+
+        assert len(actual_files) == len(files.keys()), \
+            "Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(
+                '\n'.join(files.keys()),
+                '\n'.join(actual_files),
+            )
+
     def on_success(self):
         self.new_story.save()
 
@@ -139,7 +147,7 @@ def rbdd(*keywords):
     Run story with name containing keywords and rewrite.
     """
     StoryCollection(
-        pathq(DIR.key).ext("story"),
+        pathquery(DIR.key).ext("story"),
         Engine(
             DIR,
             {
@@ -156,7 +164,7 @@ def bdd(*keywords):
     Run story with name containing keywords.
     """
     StoryCollection(
-        pathq(DIR.key).ext("story"),
+        pathquery(DIR.key).ext("story"),
         Engine(
             DIR,
             {
@@ -173,7 +181,7 @@ def regressfile(filename):
     Run all stories in filename 'filename'.
     """
     StoryCollection(
-        pathq(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": False})
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": False})
     ).in_filename(filename).ordered_by_name().play()
 
 
@@ -184,7 +192,7 @@ def regression():
     """
     lint()
     StoryCollection(
-        pathq(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": False})
+        pathquery(DIR.key).ext("story"), Engine(DIR, {"overwrite artefacts": False})
     ).only_uninherited().ordered_by_name().play()
 
 

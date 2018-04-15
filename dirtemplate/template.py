@@ -167,6 +167,10 @@ class DirTemplate(HitchBuild):
             for src_path in pathquery(self._src_path.joinpath(config['base templates'])):
                 remaining_src_paths.remove(src_path)
 
+        # Remember not spit out dirtemplate.yml
+        if self._src_path.joinpath("dirtemplate.yml") in remaining_src_paths:
+            remaining_src_paths.remove(self._src_path.joinpath("dirtemplate.yml"))
+
         # Remaining non-templated files
         for src_path in remaining_src_paths:
             relpath = src_path.relpath(self._src_path)
