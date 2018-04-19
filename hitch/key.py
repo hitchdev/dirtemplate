@@ -121,6 +121,7 @@ class Engine(BaseEngine):
                 else:
                     raise
 
+    @no_stacktrace_for(AssertionError)
     @validate(files=MapPattern(Str(), Str()))
     def build_output_is(self, files):
         for filename, content in files.items():

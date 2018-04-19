@@ -56,6 +56,7 @@ class DirTemplate(HitchBuild):
         self._files = {}
         assert self._build_path.exists(), "{0} does not exist.".format(self._build_path)
         assert self._src_path.exists(), "{0} does not exist.".format(self._src_path)
+        self._dest = self._build_path.joinpath(name)
 
     def with_vars(self, **variables):
         new_dirt = copy(self)
@@ -75,13 +76,17 @@ class DirTemplate(HitchBuild):
     @property
     def _render_vars(self):
         render_vars = copy(self._variables)
-        render_vars['directory'] = Dir(self._src_path)
+        render_vars['directory'] = Dir(self._dest)
         return render_vars
 
     def fingerprint(self):
         return {}
 
     def build(self):
+        if self._dest.exists():
+            self._dest.rmtree()
+        self._dest.mkdir()
+
         if self._src_path.joinpath("dirtemplate.yml").exists():
             config = load(
                 self._src_path.joinpath("dirtemplate.yml").text(),
@@ -99,10 +104,49 @@ class DirTemplate(HitchBuild):
             config = {"templated": []}
 
         src_paths = list(pathquery(self._src_path))
-        remaining_src_paths = copy(src_paths)
+
+        templated_filenames = [
+            list(template.keys())[0] for template in config['templated']
+        ]
+
+        if "base templates" in config:
+            templated_filenames.extend(
+                pathquery(
+                    self._src_path.joinpath(config['base templates'])
+                )
+            )
+
+        non_templated = []
+
+        for srcpath in src_paths:
+            relpath = srcpath.relpath(self._src_path)
+            add = True
+
+            if relpath in templated_filenames:
+                add = False
+
+            if relpath == "dirtemplate.yml":
+                add = False
+
+            if srcpath.isdir():
+                add = False
+
+            if "base templates" in config:
+                if relpath.startswith(config['base templates']):
+                    add = False
+
+            if add:
+                non_templated.append(relpath)
+
+        for relpath in non_templated:
+            dest_path = self._dest.joinpath(relpath)
+
+            if not dest_path.dirname().exists():
+                dest_path.dirname().makedirs()
+            self._src_path.joinpath(relpath).copy(dest_path)
 
         for template_configuration in config['templated']:
-            for src_path in copy(remaining_src_paths):
+            for src_path in src_paths:
                 if not src_path.isdir():
                     relpath = src_path.relpath(self._src_path)
 
@@ -112,7 +156,7 @@ class DirTemplate(HitchBuild):
 
                             if slug in self._files.keys():
                                 for filename, variables in self._files[slug].items():
-                                    dest_path = self._build_path.joinpath(self._name, filename)
+                                    dest_path = self._dest.joinpath(filename)
 
                                     if not dest_path.dirname().exists():
                                         dest_path.dirname().makedirs()
@@ -142,7 +186,7 @@ class DirTemplate(HitchBuild):
                                     "specified with with_files".format(relpath)
                                 ))
                         else:
-                            dest_path = self._build_path.joinpath(self._name, relpath)
+                            dest_path = self._dest.joinpath(relpath)
 
                             if not dest_path.dirname().exists():
                                 dest_path.dirname().makedirs()
@@ -159,24 +203,3 @@ class DirTemplate(HitchBuild):
                                         ),
                                     )
                                 )
-
-                        remaining_src_paths.remove(src_path)
-
-        # Remember not to spit out base templates
-        if "base templates" in config:
-            for src_path in pathquery(self._src_path.joinpath(config['base templates'])):
-                remaining_src_paths.remove(src_path)
-
-        # Remember not spit out dirtemplate.yml
-        if self._src_path.joinpath("dirtemplate.yml") in remaining_src_paths:
-            remaining_src_paths.remove(self._src_path.joinpath("dirtemplate.yml"))
-
-        # Remaining non-templated files
-        for src_path in remaining_src_paths:
-            relpath = src_path.relpath(self._src_path)
-            dest_path = self._build_path.joinpath(self._name, relpath)
-
-            if not dest_path.dirname().exists():
-                dest_path.dirname().makedirs()
-            if not src_path.isdir():
-                src_path.copy(dest_path)

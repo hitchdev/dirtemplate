@@ -1,1 +1,2 @@
+- Ensure that directory specified in templated list of files actually exists.
 - Ensure dictionary is passed to with_files files.
