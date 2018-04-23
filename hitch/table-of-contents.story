@@ -12,9 +12,14 @@ Table of contents:
       src/index.md: |
         Index file
         ----------
-        {% for dirfile in directory.location("subdir") %}
+        {% for dirfile in directory.location("subdir") - directory.location("subdir").named("index.md") %}
         * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
         {%- endfor %}
+      src/subdir/index.md: |
+        Index
+        =====
+        
+        This file should not appear in the table of contents above.
       src/subdir/page3.md: |
         Page 3 title
         ============
@@ -49,6 +54,11 @@ Table of contents:
           .with_functions(title=title).ensure_built()
   - Build output is:
       files:
+        built/example/subdir/index.md: |-
+          Index
+          =====
+          
+          This file should not appear in the table of contents above.
         built/example/subdir/page1.md: |-
           Page 1 title
           ============

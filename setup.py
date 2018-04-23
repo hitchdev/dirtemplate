@@ -42,7 +42,7 @@ setup(name="dirtemplate",
       license='MIT',
       install_requires=[
           "jinja2", "strictyaml", "hitchbuild>=0.3.3",
-          "pathquery", "python-slugify"
+          "pathquery>=0.2.5", "python-slugify"
       ],
       packages=find_packages(exclude=["hitch", "docs", ]),
       package_data={},
