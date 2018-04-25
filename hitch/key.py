@@ -128,12 +128,16 @@ class Engine(BaseEngine):
             filepath = self.path.state.joinpath(filename)
 
             assert filepath.exists(), "{0} does not exist".format(filename)
-            Templex(content).assert_match(filepath.text())
+
+            try:
+                Templex(content).assert_match(filepath.text())
+            except AssertionError as error:
+                raise AssertionError("{0} is nonmatching:\n\n{1}".format(filename, error))
 
         actual_files = list(pathquery(self.path.state.joinpath("built", "example")).is_not_dir())
 
         assert len(actual_files) == len(files.keys()), \
-            "Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(
+            "{0} Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(
                 '\n'.join(files.keys()),
                 '\n'.join(actual_files),
             )

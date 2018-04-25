@@ -4,9 +4,9 @@ from pathquery import pathquery
 from strictyaml import load, MapPattern, Str, Seq, Map, Bool, Optional
 import jinja2
 from copy import copy
-from dirtemplate.directory import Dir
 from slugify import slugify
 from dirtemplate import exceptions
+from functools import partial
 
 
 def render(template_file, functions, render_vars, base_templates):
@@ -64,8 +64,14 @@ class DirTemplate(HitchBuild):
         return new_dirt
 
     def with_functions(self, **functions):
+        def subdir(dest_path, subpath):
+            return pathquery(dest_path.joinpath(subpath))
+
         new_dirt = copy(self)
-        new_dirt._functions = functions
+        new_dirt._functions = {
+            "subdir": partial(subdir, self._dest),
+        }
+        new_dirt._functions.update(functions)
         return new_dirt
 
     def with_files(self, **files):
@@ -76,7 +82,6 @@ class DirTemplate(HitchBuild):
     @property
     def _render_vars(self):
         render_vars = copy(self._variables)
-        render_vars['directory'] = Dir(self._dest)
         return render_vars
 
     def fingerprint(self):
@@ -169,6 +174,8 @@ class DirTemplate(HitchBuild):
                                     for name, filevar in variables.items():
                                         render_vars[name] = filevar
 
+                                    render_vars['thisdir'] = pathquery(dest_path.dirname())
+
                                     dest_path.write_text(
                                         render(
                                             src_path,
@@ -191,12 +198,15 @@ class DirTemplate(HitchBuild):
                             if not dest_path.dirname().exists():
                                 dest_path.dirname().makedirs()
 
+                            render_vars = copy(self._render_vars)
+                            render_vars['thisdir'] = pathquery(dest_path.dirname())
+
                             if template_configuration[relpath]['content']:
                                 dest_path.write_text(
                                     render(
                                         src_path,
                                         self._functions,
-                                        self._render_vars,
+                                        render_vars,
                                         base_templates(
                                             self._src_path,
                                             config.get("base templates")

@@ -12,14 +12,19 @@ Table of contents:
       src/index.md: |
         Index file
         ----------
-        {% for dirfile in directory.location("subdir") - directory.location("subdir").named("index.md") %}
+        
+        Subdir:
+        
+        {% for dirfile in subdir("subdir").ext("md") - subdir("subdir").named("index.md") %}
         * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
         {%- endfor %}
       src/subdir/index.md: |
         Index
         =====
         
-        This file should not appear in the table of contents above.
+        {% for dirfile in thisdir.ext("md") - thisdir.named("index.md") %}
+        * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
+        {%- endfor %}
       src/subdir/page3.md: |
         Page 3 title
         ============
@@ -35,6 +40,8 @@ Table of contents:
         - contentpage.md:
             content: yes
             filename: yes
+        - subdir/index.md:
+            content: yes
         - index.md:
             content: yes
     setup: |
@@ -57,8 +64,11 @@ Table of contents:
         built/example/subdir/index.md: |-
           Index
           =====
+
           
-          This file should not appear in the table of contents above.
+          * [Page 1 title](subdir/page1)
+          * [Page 2 title](subdir/page2)
+          * [Page 3 title](subdir/page3)
         built/example/subdir/page1.md: |-
           Page 1 title
           ============
@@ -77,6 +87,9 @@ Table of contents:
         built/example/index.md: |-
           Index file
           ----------
+          
+          Subdir:
+          
           
           * [Page 1 title](subdir/page1)
           * [Page 2 title](subdir/page2)
