@@ -54,6 +54,7 @@ class DirTemplate(HitchBuild):
         self._variables = {}
         self._functions = {}
         self._files = {}
+        self._ignore_files = {}
         assert self._build_path.exists(), "{0} does not exist.".format(self._build_path)
         assert self._src_path.exists(), "{0} does not exist.".format(self._src_path)
         self._dest = self._build_path.joinpath(name)
@@ -77,6 +78,11 @@ class DirTemplate(HitchBuild):
     def with_files(self, **files):
         new_dirt = copy(self)
         new_dirt._files = files
+        return new_dirt
+
+    def ignore_files(self, *files):
+        new_dirt = copy(self)
+        new_dirt._ignore_files = [str(name) for name in files]
         return new_dirt
 
     @property
@@ -148,7 +154,9 @@ class DirTemplate(HitchBuild):
 
             if not dest_path.dirname().exists():
                 dest_path.dirname().makedirs()
-            self._src_path.joinpath(relpath).copy(dest_path)
+
+            if str(relpath) not in self._ignore_files:
+                self._src_path.joinpath(relpath).copy(dest_path)
 
         for template_configuration in config['templated']:
             for src_path in src_paths:
