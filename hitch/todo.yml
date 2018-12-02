@@ -1,2 +1,4 @@
-- Ensure that directory specified in templated list of files actually exists.
+- Catch exceptions and give template line number.
+- Ensure that directory specified in templated list of files actually exists:
+  - If the ordering is wrong then maybe point that out.
 - Ensure dictionary is passed to with_files files.
