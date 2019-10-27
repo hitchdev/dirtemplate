@@ -47,17 +47,16 @@ def base_templates(src_path, template_folder):
 
 
 class DirTemplate(HitchBuild):
-    def __init__(self, name, src, dest):
-        self._name = name
+    def __init__(self, src, dest):
         self._build_path = Path(dest).abspath()
+        self._dest = self._build_path
+        self.fingerprint_path = self._build_path / "fingerprint.txt"
         self._src_path = Path(src).abspath()
         self._variables = {}
         self._functions = {}
         self._files = {}
         self._ignore_files = {}
-        assert self._build_path.exists(), "{0} does not exist.".format(self._build_path)
         assert self._src_path.exists(), "{0} does not exist.".format(self._src_path)
-        self._dest = self._build_path.joinpath(name)
 
     def with_vars(self, **variables):
         new_dirt = copy(self)
@@ -90,13 +89,10 @@ class DirTemplate(HitchBuild):
         render_vars = copy(self._variables)
         return render_vars
 
-    def fingerprint(self):
-        return {}
-
     def build(self):
-        if self._dest.exists():
-            self._dest.rmtree()
-        self._dest.mkdir()
+        if self._build_path.exists():
+            self._build_path.rmtree()
+        self._build_path.mkdir()
 
         if self._src_path.joinpath("dirtemplate.yml").exists():
             config = load(

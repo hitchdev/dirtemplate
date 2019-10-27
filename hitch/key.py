@@ -1,5 +1,4 @@
 from commandlib import run, Command, CommandError
-import hitchpython
 from hitchstory import StoryCollection, BaseEngine, exceptions, validate
 from hitchstory import GivenDefinition, GivenProperty, InfoDefinition, InfoProperty
 from hitchrun import expected
@@ -11,7 +10,7 @@ from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
 from hitchstory import no_stacktrace_for
 from templex import Templex
-import hitchtest
+import hitchpylibrarytoolkit
 
 
 class Engine(BaseEngine):
@@ -33,39 +32,24 @@ class Engine(BaseEngine):
     def set_up(self):
         """Set up the environment ready to run the stories."""
         self.path.state = self.path.gen.joinpath("state")
-
+        
         if self.path.state.exists():
-            self.path.state.rmtree(ignore_errors=True)
+            self.path.state.rmtree()
         self.path.state.mkdir()
 
-        self.path.state.joinpath("built").mkdir()
-
-        for filename, content in self.given.files.items():
+        for filename, content in self.given['files'].items():
             filepath = self.path.state.joinpath(filename)
 
             if not filepath.dirname().exists():
                 filepath.dirname().makedirs()
             filepath.write_text(content)
 
-        py_version = "3.5.0" if self.given.python_version is None else self.given.python_version
-        self.python_package = hitchpython.PythonPackage(py_version)
-        self.python_package.build()
+        self.python = hitchpylibrarytoolkit.project_build(
+            "dirtemplate",
+            self.path,
+            self.given.get("python version", "3.7.0"),
+        ).bin.python
 
-        self.pip = self.python_package.cmd.pip
-        self.python = self.python_package.cmd.python
-
-        # Install debugging packages
-        with hitchtest.monitor([self.path.key.joinpath("debugrequirements.txt")]) as changed:
-            if changed:
-                run(self.pip("install", "-r", "debugrequirements.txt").in_dir(self.path.key))
-
-        # Uninstall and reinstall
-        with hitchtest.monitor(
-            pathquery(self.path.project.joinpath("dirtemplate")).ext("py")
-        ) as changed:
-            if changed:
-                self.pip("uninstall", "dirtemplate", "-y").ignore_errors().run()
-                self.pip("install", ".").in_dir(self.path.project).run()
 
     def _process_exception(self, string):
         return string.replace(self.path.state, "/path/to")
@@ -83,7 +67,8 @@ class Engine(BaseEngine):
     def run(self, code, will_output=None, raises=None):
         self.example_py_code = ExamplePythonCode(self.python, self.path.state)\
             .with_terminal_size(160, 100)\
-            .with_setup_code(self.given.setup)
+            .with_setup_code(self.given['setup'])\
+            .in_dir(self.path.state)
         to_run = self.example_py_code.with_code(code)
 
         if self.settings.get("cprofile"):
@@ -129,15 +114,16 @@ class Engine(BaseEngine):
 
             assert filepath.exists(), "{0} does not exist".format(filename)
 
-            try:
-                Templex(content).assert_match(filepath.text())
-            except AssertionError as error:
-                raise AssertionError("{0} is nonmatching:\n\n{1}".format(filename, error))
+            if content != "":
+                try:
+                    Templex(content).assert_match(filepath.text())
+                except AssertionError as error:
+                    raise AssertionError("{0} is nonmatching:\n\n{1}".format(filename, error))
 
-        actual_files = list(pathquery(self.path.state.joinpath("built", "example")).is_not_dir())
+        actual_files = [path.replace(self.path.state + "/", "") for path in pathquery(self.path.state.joinpath("example")).is_not_dir()]
 
         assert len(actual_files) == len(files.keys()), \
-            "{0} Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(
+            "Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(
                 '\n'.join(files.keys()),
                 '\n'.join(actual_files),
             )
