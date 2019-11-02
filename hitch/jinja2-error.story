@@ -20,7 +20,7 @@ Template Error:
       steps:
       - Run:
           code: |
-            DirTemplate(name="example", src="src", dest="built").ensure_built()
+            DirTemplate(src="src", dest="example").ensure_built()
           raises:
             type: dirtemplate.exceptions.TemplateLineError
             message: "Syntax error in /path/to/src/index.md on line 3:\n\nEncountered\
@@ -44,7 +44,7 @@ Template Error:
       steps:
       - Run:
           code: |
-            DirTemplate(name="example", src="src", dest="built").ensure_built()
+            DirTemplate(src="src", dest="example").ensure_built()
           raises:
             type: dirtemplate.exceptions.TemplateError
             message: "Undefined var in /path/to/src/index.md: 'undefined' is undefined"

@@ -1,10 +1,9 @@
-from commandlib import run, Command, CommandError
+from commandlib import Command, CommandError, python
 from hitchstory import StoryCollection, BaseEngine, exceptions, validate
 from hitchstory import GivenDefinition, GivenProperty, InfoDefinition, InfoProperty
 from hitchrun import expected
 from strictyaml import Str, MapPattern, Map, Optional
 from pathquery import pathquery
-from commandlib import python
 from hitchrun import hitch_maintenance
 from hitchrun import DIR
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
@@ -32,7 +31,7 @@ class Engine(BaseEngine):
     def set_up(self):
         """Set up the environment ready to run the stories."""
         self.path.state = self.path.gen.joinpath("state")
-        
+
         if self.path.state.exists():
             self.path.state.rmtree()
         self.path.state.mkdir()
@@ -49,7 +48,6 @@ class Engine(BaseEngine):
             self.path,
             self.given.get("python version", "3.7.0"),
         ).bin.python
-
 
     def _process_exception(self, string):
         return string.replace(self.path.state, "/path/to")
@@ -120,7 +118,10 @@ class Engine(BaseEngine):
                 except AssertionError as error:
                     raise AssertionError("{0} is nonmatching:\n\n{1}".format(filename, error))
 
-        actual_files = [path.replace(self.path.state + "/", "") for path in pathquery(self.path.state.joinpath("example")).is_not_dir()]
+        actual_files = [
+            path.replace(self.path.state + "/", "")
+            for path in pathquery(self.path.state.joinpath("example")).is_not_dir()
+        ]
 
         assert len(actual_files) == len(files.keys()), \
             "Should be:\n\n{0}\n\nAre actually:\n\n{1}\n".format(

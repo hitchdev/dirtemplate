@@ -37,10 +37,11 @@ Base Templates Folder:
       from dirtemplate import DirTemplate
   steps:
   - Run: |
-      DirTemplate(name="example", src="src", dest="built").ensure_built()
+      DirTemplate(src="src", dest="example").ensure_built()
   - Build output is:
       files:
-        built/example/index.md: |
+        example/fingerprint.txt:
+        example/index.md: |
           Title
           =====
           

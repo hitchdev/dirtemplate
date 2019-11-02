@@ -13,11 +13,12 @@ Ignore files:
       from dirtemplate import DirTemplate
   steps:
   - Run: |
-      DirTemplate(name="example", src="src", dest="built")\
+      DirTemplate(src="src", dest="example")\
           .ignore_files("ignore.me", "ignoredir/content1")\
           .ensure_built()
 
   - Build output is:
       files:
-        built/example/index.md: Index file
-        built/example/insubdir/subdirectoryfile: subdirectory file
+        example/index.md: Index file
+        example/insubdir/subdirectoryfile: subdirectory file
+        example/fingerprint.txt:

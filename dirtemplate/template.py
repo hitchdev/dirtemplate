@@ -52,7 +52,7 @@ class DirTemplate(HitchBuild):
         self._dest = self._build_path
         self.fingerprint_path = self._build_path / "fingerprint.txt"
         self._src_path = Path(src).abspath()
-        self._variables = {}
+        self._vars = None
         self._functions = {}
         self._files = {}
         self._ignore_files = {}
@@ -60,7 +60,7 @@ class DirTemplate(HitchBuild):
 
     def with_vars(self, **variables):
         new_dirt = copy(self)
-        new_dirt._variables = variables
+        new_dirt._vars = self.variable("variables", variables)
         return new_dirt
 
     def with_functions(self, **functions):
@@ -86,13 +86,17 @@ class DirTemplate(HitchBuild):
 
     @property
     def _render_vars(self):
-        render_vars = copy(self._variables)
-        return render_vars
+        if self._vars is not None:
+            return copy(self._vars.value)
+        else:
+            return {}
 
     def build(self):
         if self._build_path.exists():
             self._build_path.rmtree()
         self._build_path.mkdir()
+        import q
+        q('dsa')
 
         if self._src_path.joinpath("dirtemplate.yml").exists():
             config = load(
@@ -154,12 +158,21 @@ class DirTemplate(HitchBuild):
             if str(relpath) not in self._ignore_files:
                 self._src_path.joinpath(relpath).copy(dest_path)
 
+        q('z')
         for template_configuration in config['templated']:
+            q(src_paths)
             for src_path in src_paths:
+                q(src_path)
+                q(not src_path.isdir())
                 if not src_path.isdir():
                     relpath = src_path.relpath(self._src_path)
 
+                    q(relpath)
+                    q(template_configuration.keys())
+                    q(relpath in template_configuration.keys())
                     if relpath in template_configuration.keys():
+                        q('cc')
+                        q(template_configuration[relpath])
                         if 'filename' in template_configuration[relpath]:
                             slug = slugify(relpath, separator=u'_')
 
@@ -180,6 +193,7 @@ class DirTemplate(HitchBuild):
 
                                     render_vars['thisdir'] = pathquery(dest_path.dirname())
 
+                                    q('x')
                                     dest_path.write_text(
                                         render(
                                             src_path,

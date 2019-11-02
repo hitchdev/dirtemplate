@@ -16,7 +16,7 @@ Templated filename and file contents:
       from dirtemplate import DirTemplate
   steps:
   - Run: |
-      DirTemplate(name="example", src="src", dest="built")\
+      DirTemplate(src="src", dest="example")\
           .with_vars(variable="var")\
           .with_files(
               templated_md={
@@ -28,8 +28,9 @@ Templated filename and file contents:
           .ensure_built()
   - Build output is:
       files:
-        built/example/index.md: Index file
-        built/example/insubdir/subdirectoryfile: subdirectory file
-        built/example/insubdir/templated1.md: Templated var1 file. 
-        built/example/insubdir/templated2.md: Templated var2 file. 
-        built/example/insubdir/templated3.md: Templated var file. 
+        example/index.md: Index file
+        example/insubdir/subdirectoryfile: subdirectory file
+        example/insubdir/templated1.md: Templated var1 file. 
+        example/insubdir/templated2.md: Templated var2 file. 
+        example/insubdir/templated3.md: Templated var file. 
+        example/fingerprint.txt: 
