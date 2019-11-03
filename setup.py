@@ -17,7 +17,7 @@ def read(*parts):
 setup(name="dirtemplate",
       version=read('VERSION').replace('\n', ''),
       description="Build templated directories",
-      long_description=read('README.md')
+      long_description=read('README.md'),
       long_description_content_type="text/markdown",
       classifiers=[
           'Development Status :: 4 - Beta',
