@@ -92,7 +92,6 @@ class Engine(BaseEngine):
             message = raises.get('message')
 
             try:
-                result = self.example_py_code.expect_exceptions().run()
                 result.exception_was_raised(exception_type)
                 exception_message = self._process_exception(result.exception.message)
                 Templex(message).assert_match(exception_message)
@@ -249,10 +248,10 @@ def deploy(version):
     ).in_dir(DIR.project).run()
 
 
-def rerun(version="3.5.0"):
+def rerun(version="3.7.0"):
     """
     Rerun last example code block with specified version of python.
     """
     Command(DIR.gen.joinpath("py{0}".format(version), "bin", "python"))(
-        DIR.gen.joinpath("state", "examplepythoncode.py")
+        DIR.gen.joinpath("state", "working", "examplepythoncode.py")
     ).in_dir(DIR.gen.joinpath("state")).run()

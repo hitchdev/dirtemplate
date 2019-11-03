@@ -15,14 +15,14 @@ Table of contents:
         
         Subdir:
         
-        {% for dirfile in subdir("subdir").ext("md") - subdir("subdir").named("index.md") %}
+        {% for dirfile in (subdir("subdir").ext("md") - subdir("subdir").named("index.md"))|sort() %}
         * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
         {%- endfor %}
       src/subdir/index.md: |
         Index
         =====
         
-        {% for dirfile in thisdir.ext("md") - thisdir.named("index.md") %}
+        {% for dirfile in (thisdir.ext("md") - thisdir.named("index.md"))|sort() %}
         * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
         {%- endfor %}
       src/subdir/page3.md: |
@@ -51,7 +51,7 @@ Table of contents:
       def title(dirfile):
           return dirfile.text().split("=")[0].rstrip("\n")
 
-      DirTemplate(name="example", src="src", dest="built")\
+      DirTemplate(src="src", dest="example")\
           .with_files(
               contentpage_md={
                   "subdir/page1.md": {"title": "Page 1"},
@@ -61,7 +61,8 @@ Table of contents:
           .with_functions(title=title).ensure_built()
   - Build output is:
       files:
-        built/example/subdir/index.md: |-
+        example/fingerprint.txt:
+        example/subdir/index.md: |-
           Index
           =====
 
@@ -69,22 +70,22 @@ Table of contents:
           * [Page 1 title](subdir/page1)
           * [Page 2 title](subdir/page2)
           * [Page 3 title](subdir/page3)
-        built/example/subdir/page1.md: |-
+        example/subdir/page1.md: |-
           Page 1 title
           ============
           
           Page 1 contents
-        built/example/subdir/page2.md: |-
+        example/subdir/page2.md: |-
           Page 2 title
           ============
           
           Page 2 contents
-        built/example/subdir/page3.md: |-
+        example/subdir/page3.md: |-
           Page 3 title
           ============
           
           Page 3 contents
-        built/example/index.md: |-
+        example/index.md: |-
           Index file
           ----------
           
