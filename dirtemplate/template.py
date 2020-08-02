@@ -95,8 +95,6 @@ class DirTemplate(HitchBuild):
         if self._build_path.exists():
             self._build_path.rmtree()
         self._build_path.mkdir()
-        import q
-        q('dsa')
 
         if self._src_path.joinpath("dirtemplate.yml").exists():
             config = load(
@@ -158,21 +156,12 @@ class DirTemplate(HitchBuild):
             if str(relpath) not in self._ignore_files:
                 self._src_path.joinpath(relpath).copy(dest_path)
 
-        q('z')
         for template_configuration in config['templated']:
-            q(src_paths)
             for src_path in src_paths:
-                q(src_path)
-                q(not src_path.isdir())
                 if not src_path.isdir():
                     relpath = src_path.relpath(self._src_path)
 
-                    q(relpath)
-                    q(template_configuration.keys())
-                    q(relpath in template_configuration.keys())
                     if relpath in template_configuration.keys():
-                        q('cc')
-                        q(template_configuration[relpath])
                         if 'filename' in template_configuration[relpath]:
                             slug = slugify(relpath, separator=u'_')
 
@@ -193,7 +182,6 @@ class DirTemplate(HitchBuild):
 
                                     render_vars['thisdir'] = pathquery(dest_path.dirname())
 
-                                    q('x')
                                     dest_path.write_text(
                                         render(
                                             src_path,
@@ -231,3 +219,4 @@ class DirTemplate(HitchBuild):
                                         ),
                                     )
                                 )
+        self.refingerprint()

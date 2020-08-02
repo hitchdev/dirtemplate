@@ -16,14 +16,14 @@ Table of contents:
         Subdir:
         
         {% for dirfile in (subdir("subdir").ext("md") - subdir("subdir").named("index.md"))|sort() %}
-        * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
+        * [{{ title(dirfile) }}](subdir/{{ dirfile.name.stripext() }})
         {%- endfor %}
       src/subdir/index.md: |
         Index
         =====
         
         {% for dirfile in (thisdir.ext("md") - thisdir.named("index.md"))|sort() %}
-        * [{{ title(dirfile) }}](subdir/{{ dirfile.namebase }})
+        * [{{ title(dirfile) }}](subdir/{{ dirfile.name.stripext() }})
         {%- endfor %}
       src/subdir/page3.md: |
         Page 3 title

@@ -27,9 +27,14 @@ class Engine(BaseEngine):
     def __init__(self, paths, settings):
         self.path = paths
         self.settings = settings
+        self._build = hitchpylibrarytoolkit.PyLibraryBuild(
+            "hitchqs",
+            self.path,
+        )
 
     def set_up(self):
         """Set up the environment ready to run the stories."""
+        self._build.ensure_built()
         self.path.state = self.path.gen.joinpath("state")
 
         if self.path.state.exists():
@@ -43,11 +48,7 @@ class Engine(BaseEngine):
                 filepath.dirname().makedirs()
             filepath.write_text(content)
 
-        self.python = hitchpylibrarytoolkit.project_build(
-            "dirtemplate",
-            self.path,
-            self.given.get("python version", "3.7.0"),
-        ).bin.python
+        self.python = self._build.bin.python
 
     def _process_exception(self, string):
         return string.replace(self.path.state, "/path/to")
